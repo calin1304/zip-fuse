@@ -25,19 +25,8 @@ fs_node_t* fs_node_create(char *name, int type)
 	zip_stat_init(&ret->fstat);
 	memset(&(ret->st), 0, sizeof(struct stat));
 	fs_node_set_type(ret, type);
-	ret->desc = malloc(sizeof(fs_node_t) * 4);
-	ret->num_desc = 0;
-	ret->desc_capacity = 4;
+	array_new(&ret->desc);
 	return ret;
-}
-
-void fs_node_add_desc(fs_node_t *r, fs_node_t *desc)
-{
-	if (r->num_desc  == r->desc_capacity) {
-		size_t new_size = r->desc_capacity * 2 * sizeof(fs_node_t*);
-		r->desc = realloc(r->desc, new_size);
-	}
-	r->desc[r->num_desc++] = desc;
 }
 
 void fs_tree_init(fs_tree_t *r)
@@ -54,7 +43,7 @@ fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
 		fs_node_t *childNode = fs_node_find_desc(currNode, q);
 		if (childNode == NULL) {
 			childNode = fs_node_create(strdup(q), ZIP_FILE_FLAG_TYPE_DIR);
-			fs_node_add_desc(currNode, childNode);
+			array_add(currNode->desc, childNode);
 		}
 		currNode = childNode;
 		q = strtok(NULL, "/");
@@ -95,9 +84,11 @@ struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t 
 	if (sz == 0) {
 		return r;
 	}
-	for (unsigned int i = 0; i < r->num_desc; ++i) {
-		if (strncmp(name, r->desc[i]->name, sz) == 0) {
-			return r->desc[i];
+	for (unsigned int i = 0; i < array_size(r->desc); ++i) {
+		fs_node_t *p;
+		array_get_at(r->desc, i, (void*)&p);
+		if (strncmp(name, p->name, sz) == 0) {
+			return p;
 		}
 	}
 	return NULL;

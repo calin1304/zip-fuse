@@ -10,6 +10,8 @@
 #include <string.h>
 #include <time.h>
 
+#include <collectc/array.h>
+
 #include "fs_tree.h"
 
 const char input_zip[] = "test.zip";
@@ -44,8 +46,10 @@ static int cfs_readdir(const char *path, void *buffer,
 	if (p == NULL) {
 		return -ENOENT;
 	}
-	for (size_t i = 0; i < p->num_desc; ++i) {
-		filler(buffer, p->desc[i]->name, NULL, 0, 0);
+	for (size_t i = 0; i < array_size(p->desc); ++i) {
+		fs_node_t *node;
+		array_get_at(p->desc, i, (void*)&node);
+		filler(buffer, node->name, NULL, 0, 0);
 	}
 
 	return 0;
@@ -62,8 +66,10 @@ void _fs_tree_debug_print(fs_node_t *r, int depth)
 		printf("\t");
 	}
 	printf("-> %s\n", r->name);
-	for (unsigned int i = 0; i < r->num_desc; ++i) {
-		_fs_tree_debug_print(r->desc[i], depth+1);
+	for (unsigned int i = 0; i < array_size(r->desc); ++i) {
+		fs_node_t *node;
+		array_get_at(r->desc, i, (void*)&node);
+		_fs_tree_debug_print(node, depth+1);
 	}
 }
 

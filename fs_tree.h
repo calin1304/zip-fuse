@@ -5,6 +5,7 @@
 #include <zip.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <collectc/array.h>
 
 #define ZIP_FILE_FLAG_TYPE_FILE 0x1
 #define ZIP_FILE_FLAG_TYPE_DIR	0x2
@@ -14,9 +15,7 @@ struct fs_node {
 	int type;
 	zip_stat_t fstat;
 	struct stat st;
-	struct fs_node **desc;
-	size_t num_desc;
-	size_t desc_capacity;
+	Array *desc;
 };
 
 struct fs_tree {

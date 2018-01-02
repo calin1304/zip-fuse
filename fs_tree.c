@@ -4,6 +4,16 @@
 
 #include "log.h"
 
+void fs_node_set_type(fs_node_t *r, int type)
+{
+	if (type == ZIP_FILE_FLAG_TYPE_FILE) {
+		r->st.st_mode = S_IFREG | 0444;
+	} else {
+		r->st.st_mode = S_IFDIR | 0755;
+	}
+	r->type = type;
+}
+
 fs_node_t* fs_node_create(char *name, int type)
 {
 	fs_node_t *ret = malloc(sizeof(fs_node_t));
@@ -11,12 +21,7 @@ fs_node_t* fs_node_create(char *name, int type)
 	ret->name = name;
 	zip_stat_init(&ret->fstat);
 	memset(&(ret->st), 0, sizeof(struct stat));
-	if (type == ZIP_FILE_FLAG_TYPE_FILE) {
-		ret->st.st_mode = S_IFREG | 0444;
-	} else {
-		ret->st.st_mode = S_IFDIR | 0755;
-	}
-	ret->type = type;
+	fs_node_set_type(ret, type);
 	ret->desc = malloc(sizeof(fs_node_t) * 4);
 	ret->num_desc = 0;
 	ret->desc_capacity = 4;

@@ -4,6 +4,9 @@
 
 #include "log.h"
 
+struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t sz);
+fs_node_t* fs_node_find_desc(fs_node_t *r, const char *name);
+
 void fs_node_set_type(fs_node_t *r, int type)
 {
 	if (type == ZIP_FILE_FLAG_TYPE_FILE) {
@@ -42,48 +45,25 @@ void fs_tree_init(fs_tree_t *r)
 	r->root = fs_node_create("/", ZIP_FILE_FLAG_TYPE_DIR);
 }
 
-fs_node_t* _fs_tree_add_path(fs_node_t *r, const char *path)
-{
-	if (path[0] == '\0') {
-		return NULL;
-	}
-	char *p = strchr(path, '/');
-	fs_node_t *r_desc;
-	if (p != NULL) {
-		char *dir_name = strndup(path, p-path);
-		r_desc = fs_node_create(dir_name, ZIP_FILE_FLAG_TYPE_DIR);
-		fs_node_add_desc(r, r_desc);
-		return r_desc;
-	} else {
-		r_desc = fs_node_create(strdup(path), ZIP_FILE_FLAG_TYPE_FILE);
-		//TODO: Fix duplicate with the if branch
-		fs_node_add_desc(r, r_desc);
-		return r_desc;
-	}
-	return _fs_tree_add_path(r_desc, p+1);
-}
-
-fs_node_t* fs_node_lookup_existing_path(fs_node_t *r, const char *path, const char **missing_path)
-{
-	// FIXME: Bug on missing path calculations
-	char *p = strchr(path, '/');
-	for (unsigned int i = 0; i < r->num_desc; ++i) {
-		if (strncmp(path, r->desc[i]->name, p - path) == 0) {
-			fs_node_t *ret = fs_node_lookup_existing_path(r->desc[i], p+1, missing_path);
-			*missing_path = p+1;
-			return ret;
-		}
-	}
-	*missing_path = path;
-	return r;
-}
-
 fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
 {
-	const char *missing_path;
-	fs_node_t *root = fs_node_lookup_existing_path(r->root, path, &missing_path);
-	log_debug("_fs_tree_add_path(%s, %s)", root->name, missing_path);
-	return _fs_tree_add_path(root, missing_path);
+	char *p = strdup(path);
+	char *q = strtok(p, "/");
+	fs_node_t *currNode = r->root;
+	while (q) {
+		fs_node_t *childNode = fs_node_find_desc(currNode, q);
+		if (childNode == NULL) {
+			childNode = fs_node_create(strdup(q), ZIP_FILE_FLAG_TYPE_DIR);
+			fs_node_add_desc(currNode, childNode);
+		}
+		currNode = childNode;
+		q = strtok(NULL, "/");
+	}
+	free(p);
+	if (path[strlen(path) - 1] != '/') {
+		fs_node_set_type(currNode, ZIP_FILE_FLAG_TYPE_FILE);
+	}
+	return currNode;
 }
 
 fs_tree_t build_fs_tree_from_zip(zip_t *z)
@@ -114,6 +94,11 @@ struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t 
 		}
 	}
 	return NULL;
+}
+
+fs_node_t* fs_node_find_desc(fs_node_t *r, const char *name)
+{
+	return fs_node_find_desc_n(r, name, strlen(name));
 }
 
 struct fs_node* fs_tree_get_node_from_path(const struct fs_tree* r, const char *path)

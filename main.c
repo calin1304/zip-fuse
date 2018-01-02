@@ -61,7 +61,7 @@ void _fs_tree_debug_print(fs_node_t *r, int depth)
 	for (int i = 0; i < depth; ++i) {
 		printf("\t");
 	}
-	printf("-> %s\n", r->name, r->num_desc);
+	printf("-> %s\n", r->name);
 	for (unsigned int i = 0; i < r->num_desc; ++i) {
 		_fs_tree_debug_print(r->desc[i], depth+1);
 	}

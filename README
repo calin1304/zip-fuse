@@ -1,0 +1,5 @@
+Dependencies:
+
+- libfuse-3.2.1
+- libzip-1.4.0
+- libcollectc (collectionc)

@@ -66,6 +66,12 @@ fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
 	return currNode;
 }
 
+void fs_node_set_stat_from_zip_stat(fs_node_t *r, const zip_stat_t *zstat)
+{
+	r->st.st_size = zstat->size;
+	r->st.st_mtime = zstat->mtime;
+}
+
 fs_tree_t build_fs_tree_from_zip(zip_t *z)
 {
 	fs_tree_t ret;
@@ -79,6 +85,7 @@ fs_tree_t build_fs_tree_from_zip(zip_t *z)
 		log_debug("Adding %s to filesystem tree", name);
 		fs_node_t *p = fs_tree_add_path(&ret, name);
 		zip_stat_index(z, i, 0, &(p->fstat));
+		fs_node_set_stat_from_zip_stat(p, &(p->fstat));
 	}
 	return ret;
 }

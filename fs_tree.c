@@ -84,9 +84,10 @@ struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t 
 	if (sz == 0) {
 		return r;
 	}
-	for (unsigned int i = 0; i < array_size(r->desc); ++i) {
-		fs_node_t *p;
-		array_get_at(r->desc, i, (void*)&p);
+	ArrayIter it;
+	array_iter_init(&it, r->desc);
+	fs_node_t *p;
+	while (array_iter_next(&it, (void**)&p) == CC_OK) {
 		if (strncmp(name, p->name, sz) == 0) {
 			return p;
 		}

@@ -46,12 +46,12 @@ static int cfs_readdir(const char *path, void *buffer,
 	if (p == NULL) {
 		return -ENOENT;
 	}
-	for (size_t i = 0; i < array_size(p->desc); ++i) {
-		fs_node_t *node;
-		array_get_at(p->desc, i, (void*)&node);
+	ArrayIter it;
+	array_iter_init(&it, p->desc);
+	fs_node_t *node;
+	while (array_iter_next(&it, (void**)&node) == CC_OK) {
 		filler(buffer, node->name, NULL, 0, 0);
 	}
-
 	return 0;
 }
 

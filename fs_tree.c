@@ -91,7 +91,7 @@ fs_tree_t build_fs_tree_from_zip(zip_t *z)
 	// zip_get_num_entries return -1 if archive is NULL;
 	for (int i = 0; i < num_entries; ++i) {
 		const char *name = zip_get_name(z, i, 0);
-		log_debug("Adding %s to filsystem tree", name);
+		log_debug("Adding %s to filesystem tree", name);
 		fs_node_t *p = fs_tree_add_path(&ret, name);
 		zip_stat_index(z, i, 0, &(p->fstat));
 	}

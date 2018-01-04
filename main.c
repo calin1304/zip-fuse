@@ -12,11 +12,13 @@
 
 #include <collectc/array.h>
 
+#include "log.h"
 #include "fs_tree.h"
 
 const char input_zip[] = "test.zip";
 
 fs_tree_t g_fs_tree;
+zip_t *g_zip;
 
 static int cfs_getattr(const char *path, struct stat *st,
 		struct fuse_file_info *fi)
@@ -55,9 +57,33 @@ static int cfs_readdir(const char *path, void *buffer,
 	return 0;
 }
 
+static int cfs_open(const char *path, struct fuse_file_info *fi)
+{
+	(void) path;
+	(void) fi;
+	return 0;
+}
+
+static int cfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
+{
+	(void) fi;
+	const char *archive_path = path+1;
+	zip_file_t *f = zip_fopen(g_zip, archive_path, 0);
+	if (f == NULL) {
+		log_error("zip_fopen %s: %s", archive_path, zip_strerror(g_zip));
+		return -1;
+	}
+	zip_fseek(f, offset, SEEK_SET);
+	int ret = zip_fread(f, buf, size);
+	zip_fclose(f);
+	return ret;
+}
+
 static struct fuse_operations ffs_oper = {
     .getattr 	= cfs_getattr,
-    .readdir	= cfs_readdir
+    .readdir	= cfs_readdir,
+	.open		= cfs_open,
+	.read		= cfs_read,
 };
 
 void _fs_tree_debug_print(fs_node_t *r, int depth)
@@ -80,9 +106,8 @@ void fs_tree_debug_print(fs_tree_t *r)
 
 int main(int argc, char** argv)
 {
-	zip_t *z = zip_open(input_zip, ZIP_RDONLY, NULL);
-	g_fs_tree = build_fs_tree_from_zip(z);
-	zip_close(z);
+	g_zip = zip_open(input_zip, ZIP_RDONLY, NULL);
+	g_fs_tree = build_fs_tree_from_zip(g_zip);
 	// return EXIT_SUCCESS;
 	return fuse_main(argc, argv, &ffs_oper, NULL);
 }

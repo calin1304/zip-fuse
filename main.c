@@ -63,8 +63,12 @@ static int cfs_readdir(const char *path, void *buffer,
 
 static int cfs_open(const char *path, struct fuse_file_info *fi)
 {
-	(void) path;
-	(void) fi;
+	if (zip_name_locate(g_zip, path+1, 0) == -1) {
+		return -ENOENT;
+	}
+	if ((fi->flags & O_ACCMODE) != O_RDONLY) {
+		return -EACCES;
+	}
 	return 0;
 }
 

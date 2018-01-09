@@ -21,8 +21,6 @@
 #include "log.h"
 #include "fs_tree.h"
 
-const char input_zip[] = "test.zip";
-
 fs_tree_t g_fs_tree;
 zip_t *g_zip;
 
@@ -110,11 +108,44 @@ void fs_tree_debug_print(fs_tree_t *r)
 	_fs_tree_debug_print(r->root, 0);
 }
 
+static struct options {
+	const char *filename;
+	int show_help;
+} options;
+
+#define OPTION(t, p) { t, offsetof(struct options, p), 1 }
+
+static const struct fuse_opt option_spec[] = {
+	OPTION("--name=%s", filename),
+	OPTION("-h", show_help),
+	OPTION("--help", show_help),
+	FUSE_OPT_END
+};
+
+static void show_help(const char *progname) 
+{
+	printf("usage: %s --name=<filename> <mountpoint>\n\n", progname);
+}
+
 int main(int argc, char** argv)
 {
-	g_zip = zip_open(input_zip, ZIP_RDONLY, NULL);
+	struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
+	if (fuse_opt_parse(&args, &options, option_spec, NULL) == -1) {
+		log_error("fuse_opt_parse error");
+		return EXIT_FAILURE;
+	}
+	if (options.show_help) {
+		show_help(argv[0]);
+		assert(fuse_opt_add_arg(&args, "--help") == 0);
+		args.argv[0] = (char*)"";
+	}
+	if (options.filename == NULL) {
+		fprintf(stderr, "Invalid number of arguments\n");
+		show_help(argv[0]);
+		return EXIT_FAILURE;
+	}
+	g_zip = zip_open(options.filename, ZIP_RDONLY, NULL);
 	g_fs_tree = build_fs_tree_from_zip(g_zip);
-	// return EXIT_SUCCESS;
-	return fuse_main(argc, argv, &ffs_oper, NULL);
+	return fuse_main(args.argc, args.argv, &ffs_oper, NULL);
 }
 

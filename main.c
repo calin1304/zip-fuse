@@ -125,8 +125,15 @@ int main(int argc, char** argv)
 		fprintf(stderr, "Invalid number of arguments\n");
 		show_help(argv[0]);
 		return EXIT_FAILURE;
+	}	
+	int errorp;
+	if ((g_zip = zip_open(options.filename, ZIP_RDONLY, &errorp)) == NULL) {
+		zip_error_t ze;
+		zip_error_init_with_code(&ze, errorp);
+		log_fatal("zip_open: %s", zip_error_strerror(&ze));
+		zip_error_fini(&ze);
+		return EXIT_FAILURE;
 	}
-	g_zip = zip_open(options.filename, ZIP_RDONLY, NULL);
 	g_fs_tree = build_fs_tree_from_zip(g_zip);
 	return fuse_main(args.argc, args.argv, &ffs_oper, NULL);
 }

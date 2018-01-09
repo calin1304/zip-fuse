@@ -1,14 +1,20 @@
 #define FUSE_USE_VERSION 31
 
 #include <zip.h>
+
 #include <fuse.h>
+
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
+#include <stddef.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
 #include <collectc/array.h>
 

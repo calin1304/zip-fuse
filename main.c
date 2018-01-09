@@ -90,24 +90,6 @@ static struct fuse_operations ffs_oper = {
 	.read		= cfs_read,
 };
 
-void _fs_tree_debug_print(fs_node_t *r, int depth)
-{
-	for (int i = 0; i < depth; ++i) {
-		printf("\t");
-	}
-	printf("-> %s\n", r->name);
-	for (unsigned int i = 0; i < array_size(r->desc); ++i) {
-		fs_node_t *node;
-		array_get_at(r->desc, i, (void*)&node);
-		_fs_tree_debug_print(node, depth+1);
-	}
-}
-
-void fs_tree_debug_print(fs_tree_t *r)
-{
-	_fs_tree_debug_print(r->root, 0);
-}
-
 static struct options {
 	const char *filename;
 	int show_help;

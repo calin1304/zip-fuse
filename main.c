@@ -52,6 +52,9 @@ static int cfs_readdir(const char *path, void *buffer,
 	if (p == NULL) {
 		return -ENOENT;
 	}
+	if (p->type != ZIP_FILE_FLAG_TYPE_DIR) {
+		return -ENOTDIR;
+	}
 	ArrayIter it;
 	array_iter_init(&it, p->desc);
 	fs_node_t *node;

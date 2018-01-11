@@ -28,8 +28,6 @@ typedef struct fs_tree fs_tree_t;
 void fs_tree_init(fs_tree_t *r);
 fs_tree_t build_fs_tree_from_zip(zip_t *z);
 
-char **fs_tree_readdir(const char *path, int *entries_count);
-
 struct fs_node* fs_tree_get_node_from_path(const struct fs_tree* r, const char *path);
 
 #endif

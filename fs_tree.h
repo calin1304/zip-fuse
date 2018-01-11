@@ -7,22 +7,13 @@
 #include <sys/stat.h>
 #include <collectc/array.h>
 
-#define ZIP_FILE_FLAG_TYPE_FILE 0x1
-#define ZIP_FILE_FLAG_TYPE_DIR	0x2
-
-struct fs_node {
-	char *name;
-	int type;
-	zip_stat_t fstat;
-	struct stat st;
-	Array *desc;
-};
+#include "fs_node.h"
+#include "defines.h"
 
 struct fs_tree {
 	struct fs_node *root;
 };
 
-typedef struct fs_node fs_node_t;
 typedef struct fs_tree fs_tree_t;
 
 void fs_tree_init(fs_tree_t *r);

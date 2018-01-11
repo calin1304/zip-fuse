@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -g -Wall -Wextra $(shell pkg-config --cflags fuse3 libzip collectionc)
 LIBS := $(shell pkg-config --libs fuse3 libzip collectionc)
-OBJECTS := main.o fs_tree.o log.o
+OBJECTS := main.o fs_tree.o fs_node.c log.o
 TARGET := cfs
 
 .PHONY: all

@@ -26,6 +26,7 @@ typedef struct fs_node fs_node_t;
 typedef struct fs_tree fs_tree_t;
 
 void fs_tree_init(fs_tree_t *r);
+void fs_tree_free(fs_tree_t *r);
 fs_tree_t build_fs_tree_from_zip(zip_t *z);
 
 struct fs_node* fs_tree_get_node_from_path(const struct fs_tree* r, const char *path);

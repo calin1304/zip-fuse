@@ -24,6 +24,14 @@
 fs_tree_t g_fs_tree;
 zip_t *g_zip;
 
+static void cfs_destroy(void *private_data)
+{
+	(void) private_data;
+
+	fs_tree_free(&g_fs_tree);
+	zip_close(g_zip);
+}
+
 static int cfs_getattr(const char *path, struct stat *st,
 		struct fuse_file_info *fi)
 {
@@ -91,6 +99,7 @@ static int cfs_read(const char *path, char *buf, size_t size, off_t offset, stru
 }
 
 static struct fuse_operations ffs_oper = {
+	.destroy	= cfs_destroy,
     .getattr 	= cfs_getattr,
     .readdir	= cfs_readdir,
 	.open		= cfs_open,

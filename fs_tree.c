@@ -29,9 +29,26 @@ fs_node_t* fs_node_create(char *name, int type)
 	return ret;
 }
 
+void fs_node_free(fs_node_t *r)
+{
+	ArrayIter it;
+	array_iter_init(&it, r->desc);
+	fs_node_t *p;
+	while (array_iter_next(&it, (void**)&p) == CC_OK) {
+		fs_node_free(p);
+	};
+	array_destroy_cb(r->desc, free);
+}
+
 void fs_tree_init(fs_tree_t *r)
 {
 	r->root = fs_node_create("/", ZIP_FILE_FLAG_TYPE_DIR);
+}
+
+void fs_tree_free(fs_tree_t *r)
+{
+	fs_node_free(r->root);
+	free(r->root);
 }
 
 fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)

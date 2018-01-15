@@ -80,22 +80,28 @@ static int cfs_open(const char *path, struct fuse_file_info *fi)
 	if ((fi->flags & O_ACCMODE) != O_RDONLY) {
 		return -EACCES;
 	}
+	zip_file_t *f = zip_fopen(g_zip, path + 1, 0);
+	if (f == NULL) {
+		log_error("zip_fopen %s: %s", path+1, zip_strerror(g_zip));
+		return -1;
+	}
+	fi->fh = (uint64_t)f;
 	return 0;
 }
 
 static int cfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
-	(void) fi;
-	const char *archive_path = path+1;
-	zip_file_t *f = zip_fopen(g_zip, archive_path, 0);
-	if (f == NULL) {
-		log_error("zip_fopen %s: %s", archive_path, zip_strerror(g_zip));
-		return -1;
-	}
+	zip_file_t *f = (zip_file_t*)(fi->fh);
 	zip_fseek(f, offset, SEEK_SET);
 	int ret = zip_fread(f, buf, size);
-	zip_fclose(f);
 	return ret;
+}
+
+static int cfs_release(const char *path, struct fuse_file_info *fi)
+{
+	zip_file_t *f = (zip_file_t*)(fi->fh);
+	zip_fclose(f);
+	return 0;
 }
 
 static struct fuse_operations ffs_oper = {
@@ -104,6 +110,7 @@ static struct fuse_operations ffs_oper = {
     .readdir	= cfs_readdir,
 	.open		= cfs_open,
 	.read		= cfs_read,
+	.release	= cfs_release,
 };
 
 static struct options {

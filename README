@@ -1,3 +1,6 @@
+Usage:
+	./cfs --name=<zip archive name> <mount point>
+
 Dependencies:
 
 - libfuse-3.2.1

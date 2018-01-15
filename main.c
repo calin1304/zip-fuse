@@ -92,7 +92,6 @@ static int cfs_open(const char *path, struct fuse_file_info *fi)
 static int cfs_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
 	zip_file_t *f = (zip_file_t*)(fi->fh);
-	zip_fseek(f, offset, SEEK_SET);
 	int ret = zip_fread(f, buf, size);
 	return ret;
 }

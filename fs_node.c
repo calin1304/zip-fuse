@@ -2,6 +2,7 @@
 
 #include "defines.h"
 
+/* Create a node in the path tree with the given name and type */
 fs_node_t* fs_node_create(char *name, int type)
 {
 	fs_node_t *ret = malloc(sizeof(fs_node_t));
@@ -14,11 +15,13 @@ fs_node_t* fs_node_create(char *name, int type)
 	return ret;
 }
 
+/* Free all memory allocated for a node in the path tree */
 void fs_node_free(fs_node_t *r)
 {
 	ArrayIter it;
 	array_iter_init(&it, r->desc);
 	fs_node_t *p;
+    /* Free all children nodes */
 	while (array_iter_next(&it, (void**)&p) == CC_OK) {
 		fs_node_free(p);
 	};
@@ -35,6 +38,7 @@ void fs_node_set_type(fs_node_t *r, int type)
 	r->type = type;
 }
 
+/* Find a child node of r, with a given name of max length sz */
 struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t sz)
 {
 	if (sz == 0) {
@@ -51,6 +55,7 @@ struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t 
 	return NULL;
 }
 
+/* Find a child node of node r, with a given name */
 fs_node_t* fs_node_find_desc(fs_node_t *r, const char *name)
 {
 	return fs_node_find_desc_n(r, name, strlen(name));

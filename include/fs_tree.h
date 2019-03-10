@@ -16,7 +16,6 @@ struct fs_tree {
 
 typedef struct fs_tree fs_tree_t;
 
-void fs_tree_init(fs_tree_t *r);
 void fs_tree_free(fs_tree_t *r);
 fs_tree_t build_fs_tree_from_zip(zip_t *z);
 

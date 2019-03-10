@@ -4,7 +4,7 @@
 
 #include "log.h"
 
-void fs_tree_init(fs_tree_t *r)
+static void fs_tree_init(fs_tree_t *r)
 {
 	r->root = fs_node_create("/", ZIP_FILE_FLAG_TYPE_DIR);
 }
@@ -15,7 +15,7 @@ void fs_tree_free(fs_tree_t *r)
 	free(r->root);
 }
 
-fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
+static fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
 {
 	char *p = strdup(path);
 	char *q = strtok(p, "/");
@@ -36,7 +36,7 @@ fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
 	return currNode;
 }
 
-void fs_node_set_stat_from_zip_stat(fs_node_t *r, const zip_stat_t *zstat)
+static void fs_node_set_stat_from_zip_stat(fs_node_t *r, const zip_stat_t *zstat)
 {
 	r->st.st_size = zstat->size;
 	r->st.st_mtime = zstat->mtime;

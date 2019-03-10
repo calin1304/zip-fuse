@@ -5,7 +5,6 @@
 #include <zip.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <collectc/array.h>
 
 #include "fs_node.h"
 #include "defines.h"

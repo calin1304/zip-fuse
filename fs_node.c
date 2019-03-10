@@ -60,3 +60,8 @@ fs_node_t* fs_node_find_desc(fs_node_t *r, const char *name)
 {
 	return fs_node_find_desc_n(r, name, strlen(name));
 }
+
+void fs_node_add_desc(fs_node_t *r, fs_node_t *desc)
+{
+    array_add(r->desc, desc);
+}

@@ -31,7 +31,7 @@ static fs_node_t* fs_tree_add_path(fs_tree_t *r, const char *path)
 		if (childNode == NULL) {
             /* No child node found so create one */
 			childNode = fs_node_create(strdup(q), ZIP_FILE_FLAG_TYPE_DIR);
-			array_add(currNode->desc, childNode);
+            fs_node_add_desc(currNode, childNode);
 		}
 		currNode = childNode; /* Go down the tree */
 		q = strtok(NULL, "/"); /* Get next path token */

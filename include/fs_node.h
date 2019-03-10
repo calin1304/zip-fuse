@@ -25,5 +25,6 @@ void fs_node_free(fs_node_t *r);
 void fs_node_set_type(fs_node_t *r, int type);
 fs_node_t* fs_node_find_desc(fs_node_t *r, const char *name);
 struct fs_node* fs_node_find_desc_n(struct fs_node *r, const char *name, size_t sz);
+void fs_node_add_desc(fs_node_t *r, fs_node_t *desc);
 
 #endif

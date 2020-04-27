@@ -4,4 +4,4 @@
 
 ### Usage
 
-./cfs --name=<zip archive name> <mount point>
+`./cfs --name=<zip archive name> <mount point>`

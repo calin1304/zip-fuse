@@ -1,12 +1,8 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  collectionsc = (import ./collectionsc.nix) {
-    stdenv = pkgs.stdenv;
-    fetchFromGitHub = pkgs.fetchFromGitHub;
-    cmake = pkgs.cmake;
-    pkgconfig = pkgs.pkgconfig;
-    cpputest = pkgs.cpputest;
+  collectionsc = (import ./nix/collectionsc.nix) {
+    inherit (pkgs) stdenv fetchFromGitHub cmake pkgconfig cpputest;
   };
 in
   pkgs.mkShell {

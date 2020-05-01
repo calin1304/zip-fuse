@@ -9,5 +9,9 @@ stdenv.mkDerivation {
     sha256 = "1yrfflmmd2shi677amxbsbaqb3sksywrsd7mvgaf90jbd1dk69n5";
   };
   buildInputs = [ cmake pkgconfig cpputest ];
-  configurePhase = "mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$out ..";
+  configurePhase = ''
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$out ..
+  '';
 }

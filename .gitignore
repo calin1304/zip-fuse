@@ -1,4 +1,4 @@
-*.o
+_build
 cfs
 *.zip
 *.swp
